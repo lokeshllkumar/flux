@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option java_package = "com.example.serviceregistry.grpc";
+option java_outer_classname = "ServiceRegistryProto";
+option java_multiple_files = true;
+option go_package = "github.com/lokeshllkumar/load-balancer/internal/proto;proto";
+
+package serviceregistry;
+
+message GrpcServiceInstance {
+    string id = 1;
+    string serviceName = 2;
+    string host = 3;
+    int32 port = 4;
+    string url = 5;
+    string healthPath = 6;
+}
+
+message GetHealthyServicesRequest {
+}
+
+message GetHealthyServicesResponse {
+    repeated GrpcServiceInstance services = 1;
+}
+
+message RegisterServiceRequest {
+    GrpcServiceInstance instance = 1;
+}
+
+message DeregisterServiceRequest {
+    string instanceId = 1;
+}
+
+message SendHeartbeatRequest {
+    string instanceId = 1;
+}
+
+message ServiceRegistryResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+service ServiceRegistry {
+    rpc GetHealthyServices (GetHealthyServicesRequest) returns (GetHealthyServicesResponse);
+    rpc RegisterService (RegisterServiceRequest) returns (ServiceRegistryResponse);
+    rpc DeregisterService (DeregisterServiceRequest) returns (ServiceRegistryResponse);
+    rpc SendHeartbeat (SendHeartbeatRequest) returns (ServiceRegistryResponse);
+}
