@@ -13,10 +13,10 @@ A minimal Go framework to simplify to simplify the interaction of your Go backen
 ## Components
 
 The module is structured into the following logical packages:
-- [```api```](https://github.com/lokeshllkumar/flux/tree/main/api) - Defines a data structure, ```ServiceInstance```, which represents a specific instance of a backend service
-- [```metrics```](https://github.com/lokeshllkumar/flux/tree/main/metrics) - Provides Prometheus metric definitions and an HTTP handler for exposition of scraped metrics
-- [```registry```](https://github.com/lokeshllkumar/flux/tree/main/registry) - Defines the ```Client``` interface with implementations for both, HTTP and gRPC
-- [```registration```](https://github.com/lokeshllkumar/flux/tree/main/registration) - Contains ```Registrar```, which orchestrates the service lifecycle with the service registry
+- [```api```](api/) - Defines a data structure, ```ServiceInstance```, which represents a specific instance of a backend service
+- [```metrics```](metrics/) - Provides Prometheus metric definitions and an HTTP handler for exposition of scraped metrics
+- [```registry```](registry/) - Defines the ```Client``` interface with implementations for both, HTTP and gRPC
+- [```registration```](registration/) - Contains ```Registrar```, which orchestrates the service lifecycle with the service registry
 
 ## Getting Started
 
@@ -28,7 +28,7 @@ go get github.com/lokeshllkumar/flux
 go mod tidy
 ```
 
-- If you intend to use gRPC, generate protobof stubs using the ```service_registry.proto``` file in the [```proto```](https://github.com/lokeshllkumar/flux/tree/main/proto) directory by running the following command:
+- If you intend to use gRPC, generate protobof stubs using the ```service_registry.proto``` file in the [```proto```](proto/) directory by running the following command:
 ```bash
 # from within flux/proto/
 protoc --go_out=../gen --go_opt=paths=source_relative \
