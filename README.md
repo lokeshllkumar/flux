@@ -40,7 +40,7 @@ protoc --go_out=../gen --go_opt=paths=source_relative \
 scrape_configs:
   - job_name: 'go_backend_service'
     static_configs:
-    # add each service instance's reachable address as a unique target for Prometheus to scrape metrics from
+    # add each service instance's metrics endpoint as a unique target for Prometheus to scrape metrics from
       - targets: ['instance-1-address']
       - targets: ['instance-2-address']
     metrics_path: /metrics
