@@ -28,7 +28,7 @@ go get github.com/lokeshllkumar/flux
 go mod tidy
 ```
 
-- If you intend to use gRPC, generate protobof stubs using the ```service_registry.proto``` file in the [```proto```](https://github.com/lokeshllkumar/flux/tree/main/proto) by running the following command
+- If you intend to use gRPC, generate protobof stubs using the ```service_registry.proto``` file in the [```proto```](https://github.com/lokeshllkumar/flux/tree/main/proto) directory by running the following command:
 ```bash
 # from within flux/proto/
 protoc --go_out=../gen --go_opt=paths=source_relative \
