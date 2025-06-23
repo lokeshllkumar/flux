@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 
 if ! command -v go &> /dev/null
@@ -6,18 +7,9 @@ then
     exit 1
 fi
 
-REPO_URL="https://github.com/lokeshllkumar/flux.git"
-REPO_NAME="load-balancer-project"
-
-echo "Cloning repository: ${REPO_URL}"
-git clone "${REPO_URL}"
-cd "${REPO_NAME}"
-
-go mod tidy
-
 if ! command -v protoc &> /dev/null
 then
-    echo "Error: 'protoc' command not found."
+    echo "Error: 'protoc' command not found"
     exit 1
 fi
 
@@ -26,8 +18,6 @@ then
     echo "Error: Go gRPC plugins were not found in PATH"
     exit 1
 fi
-
-export PATH="$PATH:$(go env GOPATH)/bin"
 
 FLUX_GO_CLIENT_DIR="./flux"
 FLUX_PROTO_DIR="${FLUX_GO_CLIENT_DIR}/proto"
@@ -41,5 +31,7 @@ cd "${FLUX_PROTO_DIR}"
 protoc --go_out="${FLUX_GEN_OUTPUT}" --go_opt=paths=source_relative \
        --go-grpc_out="${FLUX_GEN_OUTPUT}" --go_opt=paths=source_relative \
        "${FLUX_PROTO_FILE}"
+
+go mod tidy
 
 echo "Protobuf stubs have been generated for flux"
