@@ -28,8 +28,6 @@ const (
 // ServiceRegistryClient is the client API for ServiceRegistry service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// ServiceRegistry service definition for gRPC
 type ServiceRegistryClient interface {
 	GetHealthyServices(ctx context.Context, in *GetHealthyServicesRequest, opts ...grpc.CallOption) (*GetHealthyServicesResponse, error)
 	RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*ServiceRegistryResponse, error)
@@ -88,8 +86,6 @@ func (c *serviceRegistryClient) SendHeartbeat(ctx context.Context, in *SendHeart
 // ServiceRegistryServer is the server API for ServiceRegistry service.
 // All implementations must embed UnimplementedServiceRegistryServer
 // for forward compatibility.
-//
-// ServiceRegistry service definition for gRPC
 type ServiceRegistryServer interface {
 	GetHealthyServices(context.Context, *GetHealthyServicesRequest) (*GetHealthyServicesResponse, error)
 	RegisterService(context.Context, *RegisterServiceRequest) (*ServiceRegistryResponse, error)

@@ -21,7 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// ServiceInstance message definition for gRPC
 type GrpcServiceInstance struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -106,9 +105,9 @@ func (x *GrpcServiceInstance) GetHealthPath() string {
 	return ""
 }
 
-// Request message for GetHealthyServices
 type GetHealthyServicesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	InstanceName  string                 `protobuf:"bytes,1,opt,name=instanceName,proto3" json:"instanceName,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -143,10 +142,16 @@ func (*GetHealthyServicesRequest) Descriptor() ([]byte, []int) {
 	return file_service_registry_proto_rawDescGZIP(), []int{1}
 }
 
-// Response message for GetHealthyServices
+func (x *GetHealthyServicesRequest) GetInstanceName() string {
+	if x != nil {
+		return x.InstanceName
+	}
+	return ""
+}
+
 type GetHealthyServicesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Services      []*GrpcServiceInstance `protobuf:"bytes,1,rep,name=services,proto3" json:"services,omitempty"`
+	Instances     []*GrpcServiceInstance `protobuf:"bytes,1,rep,name=instances,proto3" json:"instances,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -181,14 +186,13 @@ func (*GetHealthyServicesResponse) Descriptor() ([]byte, []int) {
 	return file_service_registry_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetHealthyServicesResponse) GetServices() []*GrpcServiceInstance {
+func (x *GetHealthyServicesResponse) GetInstances() []*GrpcServiceInstance {
 	if x != nil {
-		return x.Services
+		return x.Instances
 	}
 	return nil
 }
 
-// Request message for RegisterService
 type RegisterServiceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Instance      *GrpcServiceInstance   `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
@@ -233,7 +237,6 @@ func (x *RegisterServiceRequest) GetInstance() *GrpcServiceInstance {
 	return nil
 }
 
-// Request message for DeregisterService
 type DeregisterServiceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	InstanceId    string                 `protobuf:"bytes,1,opt,name=instanceId,proto3" json:"instanceId,omitempty"`
@@ -278,7 +281,6 @@ func (x *DeregisterServiceRequest) GetInstanceId() string {
 	return ""
 }
 
-// Request message for SendHeartbeat
 type SendHeartbeatRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	InstanceId    string                 `protobuf:"bytes,1,opt,name=instanceId,proto3" json:"instanceId,omitempty"`
@@ -323,11 +325,10 @@ func (x *SendHeartbeatRequest) GetInstanceId() string {
 	return ""
 }
 
-// Response message for registration, deregistration, heartbeat (empty)
 type ServiceRegistryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"` // Indicate success/failure
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`  // Optional: provide more details
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -389,10 +390,11 @@ const file_service_registry_proto_rawDesc = "" +
 	"\x03url\x18\x05 \x01(\tR\x03url\x12\x1e\n" +
 	"\n" +
 	"healthPath\x18\x06 \x01(\tR\n" +
-	"healthPath\"\x1b\n" +
-	"\x19GetHealthyServicesRequest\"^\n" +
-	"\x1aGetHealthyServicesResponse\x12@\n" +
-	"\bservices\x18\x01 \x03(\v2$.serviceregistry.GrpcServiceInstanceR\bservices\"Z\n" +
+	"healthPath\"?\n" +
+	"\x19GetHealthyServicesRequest\x12\"\n" +
+	"\finstanceName\x18\x01 \x01(\tR\finstanceName\"`\n" +
+	"\x1aGetHealthyServicesResponse\x12B\n" +
+	"\tinstances\x18\x01 \x03(\v2$.serviceregistry.GrpcServiceInstanceR\tinstances\"Z\n" +
 	"\x16RegisterServiceRequest\x12@\n" +
 	"\binstance\x18\x01 \x01(\v2$.serviceregistry.GrpcServiceInstanceR\binstance\":\n" +
 	"\x18DeregisterServiceRequest\x12\x1e\n" +
@@ -436,7 +438,7 @@ var file_service_registry_proto_goTypes = []any{
 	(*ServiceRegistryResponse)(nil),    // 6: serviceregistry.ServiceRegistryResponse
 }
 var file_service_registry_proto_depIdxs = []int32{
-	0, // 0: serviceregistry.GetHealthyServicesResponse.services:type_name -> serviceregistry.GrpcServiceInstance
+	0, // 0: serviceregistry.GetHealthyServicesResponse.instances:type_name -> serviceregistry.GrpcServiceInstance
 	0, // 1: serviceregistry.RegisterServiceRequest.instance:type_name -> serviceregistry.GrpcServiceInstance
 	1, // 2: serviceregistry.ServiceRegistry.GetHealthyServices:input_type -> serviceregistry.GetHealthyServicesRequest
 	3, // 3: serviceregistry.ServiceRegistry.RegisterService:input_type -> serviceregistry.RegisterServiceRequest

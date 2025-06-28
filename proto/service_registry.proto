@@ -17,10 +17,11 @@ message GrpcServiceInstance {
 }
 
 message GetHealthyServicesRequest {
+    string instanceName = 1;
 }
 
 message GetHealthyServicesResponse {
-    repeated GrpcServiceInstance services = 1;
+    repeated GrpcServiceInstance instances = 1;
 }
 
 message RegisterServiceRequest {
