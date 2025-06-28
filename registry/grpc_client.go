@@ -64,6 +64,7 @@ func (c *grpcClient) ensureConnectionReady(ctx context.Context) error {
 	return nil
 }
 
+// to register the service with the service registry
 func (c *grpcClient) Register(ctx context.Context, instance api.ServiceInstance) error {
 	opLabels := prometheus.Labels{"operation": "register", "protocol": "grpc"}
 	start := time.Now()
@@ -141,6 +142,7 @@ func (c *grpcClient) SendHeartbeat(ctx context.Context, instanceID string) error
 
 }
 
+// to deregister the service from the service registry
 func (c *grpcClient) Deregister(ctx context.Context, instanceID string) error {
 	opLabels := prometheus.Labels{"operation": "register", "protocol": "grpc"}
 	start := time.Now()
@@ -172,6 +174,45 @@ func (c *grpcClient) Deregister(ctx context.Context, instanceID string) error {
 
 	status = "success"
 	return nil
+}
+
+// queries the service registry for a lit of healthy instances of a service
+func (c *grpcClient) GetHealthyServices(ctx context.Context, serviceName string) ([]api.ServiceInstance, error) {
+	opLabels := prometheus.Labels{"operation": "get_healthy_services", "protocol": "grpc"}
+	start := time.Now()
+	var status string
+	defer func() {
+		opLabels["status"] = status
+		metrics.RegistryCallDurationSeconds.With(opLabels).Observe(time.Since(start).Seconds())
+		metrics.RegistryCallsTotal.With(opLabels).Inc()
+	}()
+
+	if err := c.ensureConnectionReady(ctx); err != nil {
+		status = "failure"
+		return nil, fmt.Errorf("grpc_client: connection not ready for get_healthy_services: %w", err)
+	}
+
+	req := &pb.GetHealthyServicesRequest{InstanceName: serviceName}
+	resp, err := c.client.GetHealthyServices(ctx, req)
+	if err != nil {
+		status = "failure"
+		return nil, fmt.Errorf("grpc_client: failed to get healthy services for %s: %w", serviceName, err)
+	}
+
+	var instances []api.ServiceInstance
+	for _, grpcInstance := range resp.GetInstances() {
+		instances = append(instances, api.ServiceInstance{
+			ID: grpcInstance.GetId(),
+			ServiceName: grpcInstance.GetServiceName(),
+			Host: grpcInstance.GetHost(),
+			Port: int(grpcInstance.GetPort()),
+			URL: grpcInstance.GetUrl(),
+			HealthPath: grpcInstance.GetHealthPath(),
+		})
+	}
+
+	status = "success"
+	return instances, nil
 }
 
 // closes the gRPC client connection; use to release resources when the service is shutting down
