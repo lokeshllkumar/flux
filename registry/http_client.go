@@ -152,6 +152,50 @@ func (c *httpClient) Deregister(ctx context.Context, instanceID string) error {
 	return nil
 }
 
+// queries the service registry for a list of healthy instances of a specific service
+func (c *httpClient) GetHealthyServices(ctx context.Context, serviceName string) ([]api.ServiceInstance, error) {
+	opLabels := prometheus.Labels{"operation": "get_healthy_services", "protocol": "http"}
+	start := time.Now()
+	var status string
+	defer func() {
+		opLabels["status"] = status
+		metrics.RegistryCallDurationSeconds.With(opLabels).Observe(time.Since(start).Seconds())
+		metrics.RegistryCallsTotal.With(opLabels).Inc()
+	}()
+
+	url := fmt.Sprintf("%s/api/v1/services/%s/healthy", c.registryURL, serviceName)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		status = "failure"
+		return nil, fmt.Errorf("https_client: failed to create get_healthy_services request for %s: %w", serviceName, err)
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		status = "failure"
+		if ctx.Err() != nil {
+			return nil, fmt.Errorf("http_client: get_healthy_services request aborted due to context for %s: %w", serviceName, ctx.Err())
+		}
+		return nil, fmt.Errorf("http_client: failed to send get_healthy_services request for %s to %s: %w", serviceName, c.registryURL, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		status = "failure"
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("http_client: get_healthy_services, failed for %s, registry returned non-200 status: %d, body: %s", serviceName, resp.StatusCode, string(bodyBytes))
+	}
+
+	var instances []api.ServiceInstance
+	if err := json.NewDecoder(resp.Body).Decode(&instances); err != nil {
+		status = "failure"
+		return nil, fmt.Errorf("http_client: faield to decode get_healthy_services response for %s: %w", serviceName, err)
+	}
+
+	status = "success"
+	return instances, nil
+}
+
 // closes the connection; exists purely to implement the interface's Close() function
 func (c *httpClient) Close() error {
 	return nil
